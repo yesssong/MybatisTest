@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sawon">	<!-- namespace : 구역을 나타내는 정보  -->
+
+	<!-- 조회 할 mapper? -->
+	<!-- select : resultType or resultMap 속성 정의 -> 어떤 타입으로 포장해줄지 정의? => 무조건 필요 -->
+	<select id="sawon_list" resultType="vo.SawonVo">	<!-- vo 안에 있는 SawonVo로 포장하겠다 -->
+		select * from sawon		<!-- 수행 해야 될 sql문(명령문) 작성해주기-->
+	</select>
+	
+	<!-- 부서별 조회하는 select 만들기   받을 파라미터 데이터타입 적어주기-->
+	<select id="sawon_list_deptno" parameterType="int" resultType="vo.SawonVo">
+		select * from sawon	where deptno=#{deptno}		<!-- parameter 변수 처리 #{} -->
+	</select>							<!-- 파라미터 변수명: 파라미너 하나일 땐 아무거나 써도 상관X but, 그냥 맞춰서 쓰자..  -->
+	
+	<!-- 직급별 조회  -->
+  	<select id="sawon_list_sajob" parameterType="String" resultType="vo.SawonVo">
+  		select * from sawon	where sajob=#{sajob}
+  	</select>
+  	
+  	<!-- parameterType: 전달 인자 타입
+  		 resultType	  : select 결과에 대한 포장타입(레코드)
+  	 -->
+  	 
+  	 
+  	 
+  	 <!-- Dynamic Query -->
+  	 <select id="sawon_list_condition" parameterType="Map" resultType="vo.SawonVo">
+ 		select * from sawon
+ 		<!-- 검색 조건 추가 -->
+ 		<trim prefix="where" prefixOverrides="and">
+ 			<!-- 부서 검색 -->
+ 			<if test="deptno!=null"> <!-- map안에 이 키 값이 있는지 없는지 확인 -->
+ 				deptno = #{ deptno }
+ 			</if>
+ 			<!-- 직급 검색 -->
+ 			<if test="sajob!=null">
+ 				and sajob = #{sajob}	<!-- 부서+직급 검색 할 경우가 있으므로 and 필요 -->
+ 										<!-- 직급만 검색할 경우 and 떼어야함 => prefixOverrides="and" -->
+ 			</if>
+ 			
+ 			<!-- 성별 검색 -->
+ 			<if test="sasex!=null">
+ 				and sasex = #{sasex}
+ 			</if>
+ 			
+ 			<!-- 입사년대별 검색 -->
+ 			<if test="hire_year_10!=null">
+ 				and floor(to_number(to_char(sahire,'YYYY'))/10)*10 = #{hire_year_10}
+ 			</if>
+ 			
+ 		</trim> 	 
+  	 </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
